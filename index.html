@@ -24,7 +24,7 @@
     scheme: 'Gemini',
     version: '7.7.0',
     exturl: false,
-    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    sidebar: {"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},
     copycode: {"enable":false,"show_result":false,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
@@ -46,12 +46,12 @@
   };
 </script>
 
-  <meta name="description" content="卒">
+  <meta name="description" content="卒:日进一步">
 <meta property="og:type" content="website">
 <meta property="og:title" content="1024">
 <meta property="og:url" content="http://yoursite.com/index.html">
 <meta property="og:site_name" content="1024">
-<meta property="og:description" content="卒">
+<meta property="og:description" content="卒:日进一步">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="Luo Hao">
 <meta name="twitter:card" content="summary">
@@ -178,143 +178,12 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/28/dubbo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Luo Hao">
-      <meta itemprop="description" content="卒">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="1024">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/12/28/dubbo/" class="post-title-link" itemprop="url">dubbo</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-12-28 17:17:22 / 修改时间：17:18:14" itemprop="dateCreated datePublished" datetime="2019-12-28T17:17:22+08:00">2019-12-28</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Dubbo-阅读笔记"><a href="#Dubbo-阅读笔记" class="headerlink" title="Dubbo 阅读笔记"></a>Dubbo 阅读笔记</h3><hr>
-<h4 id="第四章-Dubbo扩展点加载机制"><a href="#第四章-Dubbo扩展点加载机制" class="headerlink" title="第四章 Dubbo扩展点加载机制"></a>第四章 Dubbo扩展点加载机制</h4><h5 id="1-Dubbo的扩展类有四种。"><a href="#1-Dubbo的扩展类有四种。" class="headerlink" title="1.Dubbo的扩展类有四种。"></a>1.Dubbo的扩展类有四种。</h5><ul>
-<li>自动包装：用来抽象通用逻辑，但是具体实现的业务还是放在了传入的对象中。（装饰模式）</li>
-<li>自动加载：如果某个扩展类是另外一个扩展类的成员属性，并且拥有setter方法，就会自动进行初始化。Ps：如果扩展类属性是一个接口，应该扩展成哪个实现类？</li>
-<li>自适应：@Adaptive 上的参数来决定从URl中获取到具体的实现类。</li>
-<li>自动激活</li>
-</ul>
-<h5 id="2-扩展点注解"><a href="#2-扩展点注解" class="headerlink" title="2.扩展点注解"></a>2.扩展点注解</h5><ul>
-<li>@SPI 在Dubbo中作用在接口上，获取扩展点接口的具体实现。</li>
-<li>@Adaptive 扩展点自适应注解，用来改写具体的实现类，如果改写失败则默认使用@SPI上的。（如果放在类上，则直接进行动态生成，不需要再调用的时候再去动态生成哦）</li>
-<li>@Activate 自动激活注解，通过注解上的配置来决定是否符合条件需要被激活。</li>
-</ul>
-<h5 id="3-扩展点杂记"><a href="#3-扩展点杂记" class="headerlink" title="3.扩展点杂记"></a>3.扩展点杂记</h5><ul>
-<li>字节码动态生成，把SPI中的属性作为默认值，把URL中获取到的（如果有设置）作为传入的值，通过ExtensionLoader获取</li>
-<li>在读配置文件判断是不是有自己接口的构造。有的话就设置成缓存。然后获取的时候去拿缓存套圈，类似于装饰模式。例如Procotol。</li>
-</ul>
-<h4 id="第五章-Dubbo启停原理解析"><a href="#第五章-Dubbo启停原理解析" class="headerlink" title="第五章 Dubbo启停原理解析"></a>第五章 Dubbo启停原理解析</h4><h5 id="1-Dubbo的XML加载"><a href="#1-Dubbo的XML加载" class="headerlink" title="1.Dubbo的XML加载"></a>1.Dubbo的XML加载</h5><ul>
-<li>通过命名标签，Spring来解析不同的配置。逻辑统一在<code>DubboBeanDefinitionParser</code>中处理。</li>
-<li>本质上就是把Dubbo的配置转换成BeanDefition，把在XML中配置的属性，以设置对象属性的方式进行转换。</li>
-</ul>
-<h5 id="2-Dubbo的注解方式"><a href="#2-Dubbo的注解方式" class="headerlink" title="2.Dubbo的注解方式"></a>2.Dubbo的注解方式</h5><h5 id="3-服务暴露的实现原理"><a href="#3-服务暴露的实现原理" class="headerlink" title="3.服务暴露的实现原理"></a>3.服务暴露的实现原理</h5><ul>
-<li>ServiceBean继承ServiceConfig，被Spring初始化成Bean实例，具体的实现是在ServiceConfig中。</li>
-<li>暴露的过程没有在Bean的初始化过程中，而是在Spring启动后的监听里。</li>
-<li>把Bean先通过ProxyFactory变成Invoker，然后在通过Procotol（不同的协议）暴露成Exporter。</li>
-<li>暴露的过程先通过Filter（设置拦截链）和Listener。然后调用<br>DubboProcotol，在DubboProcotol中进行创建NettyServer监   听端口（此端口也就是配置的dubbo的端口）</li>
-</ul>
-<h5 id="4-服务消费的实现原理"><a href="#4-服务消费的实现原理" class="headerlink" title="4.服务消费的实现原理"></a>4.服务消费的实现原理</h5><ul>
-<li>整体流程，把ReferenceConfig通过Procotol变成Invoker。在通过ProxyFactory转换成Ref对象。在客户端配置的xml每一个Reference其实就是代理对象</li>
-<li>Invoker承载了网络连接，服务调用和重试的功能。</li>
-</ul>
-<h5 id="5-Dubbo远程调用"><a href="#5-Dubbo远程调用" class="headerlink" title="5.Dubbo远程调用"></a>5.Dubbo远程调用</h5><ul>
-<li>客户端启动后会拉取注册的服务列表，并且聚合成一个Invoker。</li>
-<li>Dubbo的协议设计（bit）<ul>
-<li>0-7 魔数的高位</li>
-<li>8-15 魔数的低位</li>
-<li>16 数据包类型 0:Response 1:Request</li>
-<li>17 16为1时有效；0 单向调用 1 双向调用</li>
-<li>18 事件标示 0:数据包 1:心跳包</li>
-<li>19-23 序列化器编号</li>
-<li>24-31 状态</li>
-<li>32-95 RPC请求的唯一Id</li>
-<li>96-127 消息体长度</li>
-</ul>
-</li>
-</ul>
-<h5 id="6-Dubbo集群容错"><a href="#6-Dubbo集群容错" class="headerlink" title="6.Dubbo集群容错"></a>6.Dubbo集群容错</h5><ul>
-<li>在使用注册中心获取服务的时候，意味着提供服务是一个集群，所以需要做集群相关的处理，提供容错性</li>
-<li>Cluster层相关：<ul>
-<li>1.通过Directory获取所有的可用列表</li>
-<li>2.通过Router接口过滤一些，而后返回一个可用列表</li>
-<li>3.在剩下的可用列表里去做负载均衡</li>
-<li>4.进行RPC调用</li>
-</ul>
-</li>
-<li>Cluster：九种容错机制</li>
-<li>Directory：俩种<ul>
-<li>RegistryDircetory： 根据方法的名字去匹配可用列表。可用列表通过订阅拿到的。</li>
-</ul>
-</li>
-<li>Router ： 三种路由模式<ul>
-<li>文件路由</li>
-<li>条件路由</li>
-<li>脚本路由</li>
-</ul>
-</li>
-<li>loadBalance：四种负载均衡算法<ul>
-<li>随机</li>
-<li>轮训</li>
-<li>最少活跃</li>
-<li>一致性hash </li>
-</ul>
-</li>
-</ul>
-<h5 id="7-Dubbo扩展点"><a href="#7-Dubbo扩展点" class="headerlink" title="7.Dubbo扩展点"></a>7.Dubbo扩展点</h5>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/28/lock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Luo Hao">
-      <meta itemprop="description" content="卒">
+      <meta itemprop="description" content="卒:日进一步">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -424,12 +293,12 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/28/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/28/mockito/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Luo Hao">
-      <meta itemprop="description" content="卒">
+      <meta itemprop="description" content="卒:日进一步">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -438,7 +307,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2019/12/28/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
+            <a href="/2019/12/28/mockito/" class="post-title-link" itemprop="url">Mockito</a>
         </h1>
 
         <div class="post-meta">
@@ -449,6 +318,108 @@
               <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-12-28 15:46:03" itemprop="dateCreated datePublished" datetime="2019-12-28T15:46:03+08:00">2019-12-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-04 19:27:05" itemprop="dateModified" datetime="2020-01-04T19:27:05+08:00">2020-01-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Mockito"><a href="#Mockito" class="headerlink" title="Mockito"></a>Mockito</h3><h4 id="Mockito是什么"><a href="#Mockito是什么" class="headerlink" title="Mockito是什么"></a>Mockito是什么</h4><blockquote>
+<p> 是一个强大的用于 Java 开发的模拟测试框架, 通过 Mockito 我们可以创建和配置 Mock 对象, 进而简化有外部依赖的类的测试.</p>
+</blockquote>
+<ul>
+<li>英文文档：<a href="https://static.javadoc.io/org.mockito/mockito-core/3.0.0/org/mockito/Mockito.html" target="_blank" rel="noopener">https://static.javadoc.io/org.mockito/mockito-core/3.0.0/org/mockito/Mockito.html</a></li>
+<li>中文文档：<a href="https://github.com/hehonghui/mockito-doc-zh/blob/master/README.md#0" target="_blank" rel="noopener">https://github.com/hehonghui/mockito-doc-zh/blob/master/README.md#0</a></li>
+</ul>
+<p>使用 Mockito 的大致流程如下:</p>
+<ul>
+<li>创建外部依赖的 Mock 对象, 然后将此 Mock 对象注入到测试类中.</li>
+<li>根据业务逻辑进行mock设置.（打桩）</li>
+<li>把需要Mock的对象进行替换后执行测试代码.</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/28/mockito/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/01/dubbo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Luo Hao">
+      <meta itemprop="description" content="卒:日进一步">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="1024">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/01/dubbo/" class="post-title-link" itemprop="url">Dubbo 阅读笔记</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-03-01 21:46:12" itemprop="dateCreated datePublished" datetime="2018-03-01T21:46:12+08:00">2018-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-04 19:24:03" itemprop="dateModified" datetime="2020-01-04T19:24:03+08:00">2020-01-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Dubbo/" itemprop="url" rel="index">
+                    <span itemprop="name">Dubbo</span>
+                  </a>
+                </span>
             </span>
 
           
@@ -462,20 +433,23 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
+          <h3 id="Dubbo-阅读笔记"><a href="#Dubbo-阅读笔记" class="headerlink" title="Dubbo 阅读笔记"></a>Dubbo 阅读笔记</h3><hr>
+<h4 id="第四章-Dubbo扩展点加载机制"><a href="#第四章-Dubbo扩展点加载机制" class="headerlink" title="第四章 Dubbo扩展点加载机制"></a>第四章 Dubbo扩展点加载机制</h4><h5 id="1-Dubbo的扩展类有四种。"><a href="#1-Dubbo的扩展类有四种。" class="headerlink" title="1.Dubbo的扩展类有四种。"></a>1.Dubbo的扩展类有四种。</h5><ul>
+<li><p>自动包装：用来抽象通用逻辑，但是具体实现的业务还是放在了传入的对象中。（装饰模式）</p>
+</li>
+<li><p>自动加载：如果某个扩展类是另外一个扩展类的成员属性，并且拥有setter方法，就会自动进行初始化。Ps：如果扩展类属性是一个接口，应该扩展成哪个实现类？</p>
+</li>
+<li><p>自适应：@Adaptive 上的参数来决定从URl中获取到具体的实现类。</p>
+</li>
+<li><p>自动激活</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/01/dubbo/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -550,7 +524,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Luo Hao</p>
-  <div class="site-description" itemprop="description">卒</div>
+  <div class="site-description" itemprop="description">卒:日进一步</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -560,6 +534,18 @@
           <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
