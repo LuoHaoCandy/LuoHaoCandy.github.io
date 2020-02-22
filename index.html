@@ -203,7 +203,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:44:52" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
+              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:50:17" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -232,46 +232,14 @@
 <p><strong>query 查询</strong> : 先分词然后分别查询算分然后再汇总</p>
 <p><strong>position_increment_gap</strong>: 如下输入Abraham Lincoln也可以把对应的数据查询出来，使<code>position_increment_gap</code>来强制name字段的间隔。</p>
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_index<span class="meta-keyword">/groups/</span><span class="number">1</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"names"</span>: [ <span class="string">"John Abraham"</span>, <span class="string">"Lincoln Smith"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<hr>
-<h3 id="Part2-结构化搜索"><a href="#Part2-结构化搜索" class="headerlink" title="Part2.结构化搜索"></a>Part2.结构化搜索</h3><p><strong>结构化搜索</strong>:对结构化数据的搜索，什么是结构化数据？</p>
-<ul>
-<li>日期</li>
-<li>布尔</li>
-<li>数字</li>
-<li>有规则的文本</li>
-</ul>
-<p><strong>布尔类型的搜索</strong>: term查询即可</p>
-<p><strong>日期数字的范围查询</strong>: 采用range <code>lte</code> &amp; <code>gte</code></p>
-<p><strong>多值字段的查询</strong>: term查询是包含的关系，如果想要精确的进行相等查询需要加字段</p>
-<hr>
-<h3 id="Part3-搜索的相关性算分"><a href="#Part3-搜索的相关性算分" class="headerlink" title="Part3.搜索的相关性算分"></a>Part3.搜索的相关性算分</h3><p><strong>词频(TF)</strong>: 检索的词出现的次数/文档总字数 ; 度量一条查询和结果文档相关性的简单算法是用TF相加</p>
-<p><strong>逆文档频率(IDF)</strong>: log(全部文档数/检索词出现的总数) </p>
-<p><strong>相关性算分</strong> : TF*IDF</p>
-<hr>
-<h3 id="Part4-几种复杂查询"><a href="#Part4-几种复杂查询" class="headerlink" title="Part4.几种复杂查询"></a>Part4.几种复杂查询</h3><p><strong>QUERY CONTEXT vs FILTER CONTEXT</strong> </p>
-<ul>
-<li>must should 影响算分，属于QUERY CONTEXT </li>
-<li>must_not filter 不影响算法，属于FILTER CONTEXT</li>
-</ul>
-<p><strong>多字段多字符串查询</strong></p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">POST /products/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"bool"</span> : &#123;</span><br><span class="line">      <span class="string">"must"</span> : &#123;</span><br><span class="line">        <span class="string">"term"</span> : &#123; "<span class="type">price</span><span class="string">" : "</span><span class="number">30</span><span class="string">" &#125;</span></span><br><span class="line"><span class="string">      &#125;,</span></span><br><span class="line"><span class="string">      "</span>filter<span class="string">": &#123;</span></span><br><span class="line"><span class="string">        "</span>term<span class="string">" : &#123; "</span>avaliable<span class="string">" : "</span><span class="literal">true</span><span class="string">" &#125;</span></span><br><span class="line"><span class="string">      &#125;,</span></span><br><span class="line"><span class="string">      "</span>must_not<span class="string">" : &#123;</span></span><br><span class="line"><span class="string">        "</span><span class="keyword">range</span><span class="string">" : &#123;</span></span><br><span class="line"><span class="string">          "</span>price<span class="string">" : &#123; "</span>lte<span class="string">" : 10 &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">      &#125;,</span></span><br><span class="line"><span class="string">      "</span>should<span class="string">" : [</span></span><br><span class="line"><span class="string">        &#123; "</span>term<span class="string">" : &#123; "</span>productID.keyword<span class="string">" : "</span>JODL-X-<span class="number">1937</span>-#pV7<span class="string">" &#125; &#125;,</span></span><br><span class="line"><span class="string">        &#123; "</span>term<span class="string">" : &#123; "</span>productID.keyword<span class="string">" : "</span>XHDK-A-<span class="number">1293</span>-#fJ3<span class="string">" &#125; &#125;</span></span><br><span class="line"><span class="string">      ],</span></span><br><span class="line"><span class="string">      "</span>minimum_should_match<span class="string">" :1</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>单字符串多字段查询</strong></p>
-<ul>
-<li>should 简单的进行相加算分</li>
-<li>Dis Max Query 出现竞争的时候采用分数最高的一个字段</li>
-<li>Multi Match <ul>
-<li>Best Fields 评分来自最匹配的字段</li>
-<li>Most Fields 增加英文文档的匹配度</li>
-<li>Cross Fields 多个值的多个字段的匹配</li>
-</ul>
-</li>
-</ul>
-<hr>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/22/elastic-search-shen-ru-sou-suo/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -315,7 +283,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:48:51" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
+              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:50:30" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -358,56 +326,14 @@
 <ul>
 <li>7.0版本之后提供了自我选主的功能</li>
 </ul>
-<hr>
-<h3 id="Part2-分片与集群的故障转移"><a href="#Part2-分片与集群的故障转移" class="headerlink" title="Part2.分片与集群的故障转移"></a>Part2.分片与集群的故障转移</h3><hr>
-<h3 id="Part3-文档分布式存储"><a href="#Part3-文档分布式存储" class="headerlink" title="Part3.文档分布式存储"></a>Part3.文档分布式存储</h3><p><strong>路由算法</strong> : shared=hash(_routing) % number_of_rimary_shards</p>
-<ul>
-<li>hash 算法确保分配均匀</li>
-<li>默认的_routing 是文档的id</li>
-<li>可以自己指定_routing</li>
-<li>所以primay分片的个数不能修改（为什么不用hash一致性：因为数据开销很小，重新分配的话就重建索引吧）</li>
-</ul>
-<hr>
-<h3 id="Part4-分片及其生命周期"><a href="#Part4-分片及其生命周期" class="headerlink" title="Part4.分片及其生命周期"></a>Part4.分片及其生命周期</h3><p><strong>一个文档写入的过程</strong></p>
-<ul>
-<li>先写入index Buffer，再从buffer默认一秒一次刷新到segment上</li>
-<li>在写入index Buffer的过程中同时会写入到trans log中用来防止断电的发生。在写入到segment时，translog 是不会清空的</li>
-<li>当translog的文件大小达到512M 或者 时间达到了30分钟会做一次提交刷到磁盘上。</li>
-</ul>
-<hr>
-<h3 id="Part5-分布式查询和相关性算法"><a href="#Part5-分布式查询和相关性算法" class="headerlink" title="Part5.分布式查询和相关性算法"></a>Part5.分布式查询和相关性算法</h3><p><strong>QUERY-then-Fetch</strong></p>
-<ul>
-<li>第一步Query<ul>
-<li>用户发起搜索请求，通过<code>Coordinating</code>节点选择3个分片来执行请求</li>
-<li>被选中的分片执行后返回From + Size 个排序后的文档Id和排序值返回</li>
-</ul>
-</li>
-<li>第二部fetch<ul>
-<li>重新排序后选取From 到 From +Size 个的文档</li>
-<li>通过muti get的方式去相应的分片上进行获取数据</li>
-</ul>
-</li>
-</ul>
-<p>如果直接通过id去查询不用选择分片而是可以直接hash到对应的分片上，如果不是通过id而是通过值的方式那么就去所有分片上去查询数据然后把id汇总后再去取值。</p>
-<p><strong>解决算分不准的问题</strong> ： 因为每个分片都是基于自己分片来算分的，那么由于数据量的问题可能会有一些偏差</p>
-<ul>
-<li>数据量不大的时候分片就是1，数据量大的时候只要保证文档均匀分布就不会有问题</li>
-<li>通过设置查询参数 searh_type=dfs_query_then_fetch，到各个分片都把分片数据搜集起来再去算分，会影响性能。</li>
-</ul>
-<hr>
-<h3 id="Part7-分布式下分页与遍历"><a href="#Part7-分布式下分页与遍历" class="headerlink" title="Part7.分布式下分页与遍历"></a>Part7.分布式下分页与遍历</h3><p><strong>分页</strong>：之前通过 <code>From</code> 和 <code>Size</code> 来完成分页，但是在分布式情况下，例如 【 From 900 Size 100 】 由于数据分片所以需要把每个分片中的【 From 900 Size 100 】 取出来再由<code>Coordinating</code>节点排序后算出需要的范围。</p>
-<p><strong>Search After</strong>:解决如上说的不能进行深度分页的问题。</p>
-<ul>
-<li>按照某个字段排序，一般为了保证唯一性会带上_id</li>
-<li>针对排序后的文档，每次加入上一次查询的最后的_id</li>
-</ul>
-<p><strong>Scroll Api</strong>：用来遍历数据，比如导出全部数据</p>
-<ul>
-<li>做快照</li>
-<li>每次传入新的scroll_id</li>
-</ul>
-<hr>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/22/elastic-search-fen-bu-shi-sou-suo/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
