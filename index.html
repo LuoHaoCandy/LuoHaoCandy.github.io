@@ -178,6 +178,192 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://bloglh.com/2020/02/22/elastic-search-fen-bu-shi-sou-suo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Luo Hao">
+      <meta itemprop="description" content="卒:日进一步">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="1024">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/22/elastic-search-fen-bu-shi-sou-suo/" class="post-title-link" itemprop="url">ElasticSearch 分布式搜索</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-22 22:59:48 / 修改时间：22:59:36" itemprop="dateCreated datePublished" datetime="2020-02-22T22:59:48+08:00">2020-02-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elastic-Search/" itemprop="url" rel="index">
+                    <span itemprop="name">Elastic Search</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="分布式特性及分布式搜索的机制"><a href="#分布式特性及分布式搜索的机制" class="headerlink" title="分布式特性及分布式搜索的机制"></a>分布式特性及分布式搜索的机制</h2><h3 id="Part1-集群分布式模型及选主和脑裂问题"><a href="#Part1-集群分布式模型及选主和脑裂问题" class="headerlink" title="Part1.集群分布式模型及选主和脑裂问题"></a>Part1.集群分布式模型及选主和脑裂问题</h3><p><strong>节点角色</strong></p>
+<ul>
+<li>主节点 ：索引相关操作，进行分片</li>
+<li>数据节点 : 用于存储数据</li>
+</ul>
+<p><strong>节点和分片之间关系</strong></p>
+<ul>
+<li>主分片分配在不同的节点上</li>
+<li>每一个主分片都会对应一个副本分片</li>
+</ul>
+<p><strong>节点选举</strong></p>
+<ul>
+<li>ping 对方，Node Id 小的成为Master</li>
+</ul>
+<p><strong>脑裂问题解决</strong></p>
+<ul>
+<li>7.0版本之后提供了自我选主的功能</li>
+</ul>
+<hr>
+<h3 id="Part2-分片与集群的故障转移"><a href="#Part2-分片与集群的故障转移" class="headerlink" title="Part2.分片与集群的故障转移"></a>Part2.分片与集群的故障转移</h3><p><strong>场景</strong> : 三个节点，主分片为3，副本分片为1，当所有节点正常运行时如下图所示：</p>
+<p><img src="https://s2.ax1x.com/2020/02/22/3QbLvQ.jpg" alt="GitHub set up"></p>
+<p><strong>集群的故障转移</strong> ：此时Node1产生故障，于是副本分片2升级成为主分片2，系统整体为黄色。然后把副本分片0和副本分片2分配在Node2 和 Node3上，此时系统又重新恢复成绿色。</p>
+<p><img src="https://s2.ax1x.com/2020/02/22/3Qbqgg.jpg" alt="GitHub set up"></p>
+<hr>
+<h3 id="Part3-文档分布式存储"><a href="#Part3-文档分布式存储" class="headerlink" title="Part3.文档分布式存储"></a>Part3.文档分布式存储</h3><p><strong>路由算法</strong> : shared=hash(_routing) % number_of_rimary_shards</p>
+<ul>
+<li>hash 算法确保分配均匀</li>
+<li>默认的_routing 是文档的id</li>
+<li>可以自己指定_routing</li>
+<li>所以primay分片的个数不能修改（为什么不用hash一致性：因为数据开销很小，重新分配的话就重建索引吧）</li>
+</ul>
+<hr>
+<h3 id="Part4-分片及其生命周期"><a href="#Part4-分片及其生命周期" class="headerlink" title="Part4.分片及其生命周期"></a>Part4.分片及其生命周期</h3><p><strong>一个文档写入的过程</strong></p>
+<ul>
+<li>先写入index Buffer，再从buffer默认一秒一次刷新到segment上</li>
+<li>在写入index Buffer的过程中同时会写入到trans log中用来防止断电的发生。在写入到segment时，translog 是不会清空的</li>
+<li>当translog的文件大小达到512M 或者 时间达到了30分钟会做一次提交刷到磁盘上。</li>
+</ul>
+<hr>
+<h3 id="Part5-分布式查询和相关性算法"><a href="#Part5-分布式查询和相关性算法" class="headerlink" title="Part5.分布式查询和相关性算法"></a>Part5.分布式查询和相关性算法</h3><p><strong>QUERY-then-Fetch</strong></p>
+<ul>
+<li>第一步Query<ul>
+<li>用户发起搜索请求，通过<code>Coordinating</code>节点选择3个分片来执行请求</li>
+<li>被选中的分片执行后返回From + Size 个排序后的文档Id和排序值返回</li>
+</ul>
+</li>
+<li>第二部fetch<ul>
+<li>重新排序后选取From 到 From +Size 个的文档</li>
+<li>通过muti get的方式去相应的分片上进行获取数据</li>
+</ul>
+</li>
+</ul>
+<p>如果直接通过id去查询不用选择分片而是可以直接hash到对应的分片上，如果不是通过id而是通过值的方式那么就去所有分片上去查询数据然后把id汇总后再去取值。</p>
+<p><strong>解决算分不准的问题</strong> ： 因为每个分片都是基于自己分片来算分的，那么由于数据量的问题可能会有一些偏差</p>
+<ul>
+<li>数据量不大的时候分片就是1，数据量大的时候只要保证文档均匀分布就不会有问题</li>
+<li>通过设置查询参数 searh_type=dfs_query_then_fetch，到各个分片都把分片数据搜集起来再去算分，会影响性能。</li>
+</ul>
+<hr>
+<h3 id="Part6-排序及Doc-Values-amp-Fielddata"><a href="#Part6-排序及Doc-Values-amp-Fielddata" class="headerlink" title="Part6.排序及Doc Values&amp;Fielddata"></a>Part6.排序及Doc Values&amp;Fielddata</h3><p><strong>排序</strong> : 排序是通过对原始内容操作完成的，无法使用倒排索引；需要用到正排索引，通过Id和字段快速来得到原始内容</p>
+<ul>
+<li>有两种实现方式来完成， <code>Doc Values</code> 和 <code>Fielddata</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>—</th>
+<th>关系型数据库</th>
+<th>ElasticSearch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>何时创建</td>
+<td>索引时，和倒排索引一起</td>
+<td>搜索时动态创建</td>
+</tr>
+<tr>
+<td>创建位置</td>
+<td>磁盘</td>
+<td>JVM Heap</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>避免大量占用内存</td>
+<td>索引速度快</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>索引速度慢</td>
+<td>占内存</td>
+</tr>
+<tr>
+<td>缺省值</td>
+<td>2.x 之后</td>
+<td>1.x</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="Part7-分布式下分页与遍历"><a href="#Part7-分布式下分页与遍历" class="headerlink" title="Part7.分布式下分页与遍历"></a>Part7.分布式下分页与遍历</h3><p><strong>分页</strong>：之前通过 <code>From</code> 和 <code>Size</code> 来完成分页，但是在分布式情况下，例如 【 From 900 Size 100 】 由于数据分片所以需要把每个分片中的【 From 900 Size 100 】 取出来再由<code>Coordinating</code>节点排序后算出需要的范围。</p>
+<p><strong>Search After</strong>:解决如上说的不能进行深度分页的问题。</p>
+<ul>
+<li>按照某个字段排序，一般为了保证唯一性会带上_id</li>
+<li>针对排序后的文档，每次加入上一次查询的最后的_id</li>
+</ul>
+<p><strong>Scroll Api</strong>：用来遍历数据，比如导出全部数据</p>
+<ul>
+<li>做快照</li>
+<li>每次传入新的scroll_id</li>
+</ul>
+<hr>
+<h3 id="Part8-处理并发读写操作"><a href="#Part8-处理并发读写操作" class="headerlink" title="Part8.处理并发读写操作"></a>Part8.处理并发读写操作</h3><ul>
+<li>内部版本控制：if_seq_no 和 if_primary_term</li>
+<li>使用外部版本控制（使用其它数据库作为主要存储）：version+version_type=external</li>
+</ul>
+<blockquote>
+<p>在真实情况中，很多时候会把关系型数据库和es结合起来使用。利用关系型数据库的事务性质和es的全文检索与聚合分析（es面对大量文档update的场景其实性能也不是很理想）各自的优点。<br>这个时候，如果有同步数据库和es中数据的场景，就可以用数据库的version或者last update时间戳来作为外部的version，实现冲突的检测。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://bloglh.com/2020/02/22/elastic-search-shen-ru-sou-suo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -235,100 +421,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/02/22/elastic-search-shen-ru-sou-suo/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://bloglh.com/2020/02/22/elastic-search-fen-bu-shi-sou-suo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Luo Hao">
-      <meta itemprop="description" content="卒:日进一步">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="1024">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/22/elastic-search-fen-bu-shi-sou-suo/" class="post-title-link" itemprop="url">ElasticSearch 分布式搜索</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:50:30" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Elastic-Search/" itemprop="url" rel="index">
-                    <span itemprop="name">Elastic Search</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="分布式特性及分布式搜索的机制"><a href="#分布式特性及分布式搜索的机制" class="headerlink" title="分布式特性及分布式搜索的机制"></a>分布式特性及分布式搜索的机制</h2><h3 id="Part1-集群分布式模型及选主和脑裂问题"><a href="#Part1-集群分布式模型及选主和脑裂问题" class="headerlink" title="Part1.集群分布式模型及选主和脑裂问题"></a>Part1.集群分布式模型及选主和脑裂问题</h3><p><strong>节点角色</strong></p>
-<ul>
-<li>主节点 ：索引相关操作，进行分片</li>
-<li>数据节点 : 用于存储数据</li>
-</ul>
-<p><strong>节点和分片之间关系</strong></p>
-<ul>
-<li>主分片分配在不同的节点上</li>
-<li>每一个主分片都会对应一个副本分片</li>
-</ul>
-<p><strong>节点选举</strong></p>
-<ul>
-<li>ping 对方，Node Id 小的成为Master</li>
-</ul>
-<p><strong>脑裂问题解决</strong></p>
-<ul>
-<li>7.0版本之后提供了自我选主的功能</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/02/22/elastic-search-fen-bu-shi-sou-suo/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
