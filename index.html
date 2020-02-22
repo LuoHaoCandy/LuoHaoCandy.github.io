@@ -192,7 +192,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/02/22/elastic-search/" class="post-title-link" itemprop="url">ElasticSearch</a>
+            <a href="/2020/02/22/elastic-search/" class="post-title-link" itemprop="url">Elastic Search</a>
         </h1>
 
         <div class="post-meta">
@@ -203,7 +203,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:32:51" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
+              <time title="创建时间：2020-02-22 17:32:48 / 修改时间：17:34:56" itemprop="dateCreated datePublished" datetime="2020-02-22T17:32:48+08:00">2020-02-22</time>
             </span>
 
           
@@ -241,163 +241,14 @@
 <li>Setting ： 定义不同的数据分布</li>
 </ul>
 <p><strong>type</strong> : 7.0 版本之后一个索引只会对应一个type</p>
-<hr>
-<h4 id="二、关系型数据库比对"><a href="#二、关系型数据库比对" class="headerlink" title="二、关系型数据库比对"></a>二、关系型数据库比对</h4><table>
-<thead>
-<tr>
-<th>关系型数据库</th>
-<th>ElasticSearch</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Table</td>
-<td>Index (Type)</td>
-</tr>
-<tr>
-<td>Row</td>
-<td>Document</td>
-</tr>
-<tr>
-<td>Column</td>
-<td>Field</td>
-</tr>
-<tr>
-<td>Schema</td>
-<td>Mapping</td>
-</tr>
-<tr>
-<td>SQL</td>
-<td>DSL</td>
-</tr>
-</tbody></table>
-<ul>
-<li>需要数据库事务 ： 关系型数据库</li>
-<li>用来计算分数等 ： ElasticSearch</li>
-</ul>
-<hr>
-<h3 id="Part2-基本概念：节点、集群、分片及副本"><a href="#Part2-基本概念：节点、集群、分片及副本" class="headerlink" title="Part2.基本概念：节点、集群、分片及副本"></a>Part2.基本概念：节点、集群、分片及副本</h3><p><strong>节点</strong> :  每一个节点就是一个ElasticSearch的实例。</p>
-<ul>
-<li>每一个节点都有名字，可以通过 -E node.name= ** 来指定</li>
-<li>每一个节点在启动后会分配一个UID 存在data目录下</li>
-</ul>
-<p><strong>Master eligible &amp; Master</strong> :  </p>
-<ul>
-<li>每一个节点就是一个ElasticSearch的实例。</li>
-<li>每个节点启动后默认就是一个Master eligible 节点</li>
-<li>Master eligible 节点可以通过选主成为Mater 节点</li>
-<li>当第一个节点启动后，会把自己选成Master节点</li>
-<li>每个节点都维护了集群状态，但是只有Master可以修改集群状态</li>
-</ul>
-<p><strong>Data &amp; Coordinating</strong> :  </p>
-<ul>
-<li>Data Node 是可以保存数据的Node，在数据扩展上起到了重要的作用</li>
-<li>Coordinating 用来接受客户端的请求分发到合适的节点后把结果进行汇集一起，每个节点默认就是Coordinating节点</li>
-</ul>
-<p>结合上面来看每一个实例可能负责多个节点的任务，但是在生产环境中最好做到单一节点职责，方便进行机器硬件配置</p>
-<p><strong>分片</strong> :  分为主分片和副本。</p>
-<ul>
-<li>主分片主要用来解决数据水平扩展的问题。通过主分片把数据分散到集群内。</li>
-<li>副本用于解决数据的高可用问题,是主分片的拷贝。</li>
-</ul>
-<hr>
-<h3 id="Part3-文档的CRUD-和-批量操作"><a href="#Part3-文档的CRUD-和-批量操作" class="headerlink" title="Part3.文档的CRUD 和 批量操作"></a>Part3.文档的CRUD 和 批量操作</h3><p><strong>1.创建文档</strong> :有如下的两种形式</p>
-<ul>
-<li>POST users/_doc :系统分配Id</li>
-<li>PUT users/_create/1 : 自己指定Id</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">POST users/_doc</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"user"</span>:<span class="string">"LuoHao"</span>,</span><br><span class="line">  <span class="attr">"post_date"</span>:<span class="string">"2020-02-17 00:00:00"</span>,</span><br><span class="line">  <span class="attr">"message"</span>:<span class="string">"hello es"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PUT users/_create/1</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"user"</span>:<span class="string">"LPY"</span>,</span><br><span class="line">  <span class="attr">"post_date"</span>:<span class="string">"2020-02-17 00:00:00"</span>,</span><br><span class="line">  <span class="attr">"message"</span>:<span class="string">"hello es"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<p><strong>2.获取文档</strong> </p>
-<ul>
-<li>GET users/_doc/1 </li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"_index"</span> : <span class="string">"users"</span>,</span><br><span class="line">  <span class="attr">"_type"</span> : <span class="string">"_doc"</span>,</span><br><span class="line">  <span class="attr">"_id"</span> : <span class="string">"1"</span>,</span><br><span class="line">  <span class="attr">"_version"</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"_seq_no"</span> : <span class="number">4</span>,</span><br><span class="line">  <span class="attr">"_primary_term"</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"found"</span> : <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">"_source"</span> : &#123;</span><br><span class="line">    <span class="attr">"user"</span> : <span class="string">"LPY"</span>,</span><br><span class="line">    <span class="attr">"post_date"</span> : <span class="string">"2020-02-17 00:00:00"</span>,</span><br><span class="line">    <span class="attr">"message"</span> : <span class="string">"hello es"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>3.更新文档</strong> </p>
-<ul>
-<li>POST users/_update/1 （有就删除后写入，没有写入）</li>
-<li>PUT users/_doc/1 追加更新</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST users/_update/1</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"doc"</span>:&#123;</span><br><span class="line">    <span class="attr">"albums"</span>:[<span class="string">"1"</span>,<span class="string">"2"</span>]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT users/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span>:<span class="string">"LPY"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="Part4-倒排索引介绍"><a href="#Part4-倒排索引介绍" class="headerlink" title="Part4.倒排索引介绍"></a>Part4.倒排索引介绍</h3><p><strong>倒排索引</strong> ： 由两部分组成</p>
-<ul>
-<li>单词词典：记录了所有文档的单词，单词到倒排列表的关联关系。数据量较大通常使用b+树或者哈希链表的方式来存储</li>
-<li>倒排列表记录了单词对应的文档结合，由倒排索引项组成<ul>
-<li>文档ID</li>
-<li>词频：用于相关性打分</li>
-<li>位置：单词在文档中分词的位置</li>
-<li>偏移：记录单词的开始结束位置，用于高亮显示 </li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="Part5-Search-API-概览"><a href="#Part5-Search-API-概览" class="headerlink" title="Part5.Search API 概览"></a>Part5.Search API 概览</h3><p><strong>URI Search</strong> ： 在URL中使用查询参数</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">GET</span> kibana_sample_data_ecommerce/_search?<span class="attribute">q</span>=customer_first_name:Eddie</span><br></pre></td></tr></table></figure>
-
-<p><strong>Request Body Search</strong> ： 基于Json格式的更加完备的查询（DSL）</p>
-<ul>
-<li>分页 : <code>sort</code></li>
-<li>排序 : <code>from</code> &amp; <code>size</code></li>
-<li>搜索指定值 : <code>_source</code></li>
-</ul>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST kiban<span class="built_in">a_sample</span>_dat<span class="built_in">a_ecommerce</span>/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"sort"</span>: [&#123;<span class="string">"customer_id"</span>:<span class="string">"desc"</span>&#125;</span><br><span class="line">  ], </span><br><span class="line">  <span class="string">"_source"</span>: [<span class="string">"category"</span>], </span><br><span class="line">  <span class="string">"from"</span>:<span class="number">0</span>,</span><br><span class="line">  <span class="string">"size"</span>: <span class="number">20</span>, </span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"match_all"</span>: &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查询表达式 Match </li>
-</ul>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">POST kiban<span class="built_in">a_sample</span>_dat<span class="built_in">a_ecommerce</span>/_search</span><br><span class="line">&#123;</span><br><span class="line">   <span class="string">"query"</span>: &#123;</span><br><span class="line">     <span class="string">"match"</span>: &#123;</span><br><span class="line">       <span class="string">"manufacturer"</span>:&#123;</span><br><span class="line">           <span class="string">"query"</span>: <span class="string">"Elitelligence Pyramidustries"</span></span><br><span class="line">         , <span class="string">"operator"</span>: <span class="string">"and"</span></span><br><span class="line">       &#125;</span><br><span class="line">       </span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>Match Phrase : 按照顺序进行查询，增加属性<code>slop</code> 指定中间可以有多余的字符</p>
-</li>
-<li><p>query_string</p>
-</li>
-</ul>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST kiban<span class="built_in">a_sample</span>_dat<span class="built_in">a_ecommerce</span>/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"query_string"</span>: &#123;</span><br><span class="line">      <span class="string">"default_field"</span>: <span class="string">"day_of_week"</span>,</span><br><span class="line">      <span class="string">"query"</span>: <span class="string">"Monday OR TUESDAY"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>simple_query_strting</li>
-</ul>
-<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST kiban<span class="built_in">a_sample</span>_dat<span class="built_in">a_ecommerce</span>/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">     <span class="string">"simple_query_string"</span>: &#123;</span><br><span class="line">       <span class="string">"query"</span>: <span class="string">"EUR"</span>,</span><br><span class="line">       <span class="string">"fields"</span>: [<span class="string">"currency"</span>]</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong> ：<br>1：查询分URI查询和DSL查询两大类。<br>      用DSL查询比较多，DSL查询有分term query，match query和一些复合查询。</p>
-<p>2：三种查询的区别<br>query match  功能强大易出错<br>query_string 功能简单灵活性低<br>simple_query_string 功能简单灵活性低</p>
-<hr>
-<h3 id="Part6-Mapping"><a href="#Part6-Mapping" class="headerlink" title="Part6.Mapping"></a>Part6.Mapping</h3><p><strong>字段的数据类型</strong> </p>
-<ul>
-<li>简单类型<ul>
-<li>TexT /Keyword</li>
-<li>Date</li>
-<li>Integer/Floating</li>
-<li>Boolean</li>
-<li>Ipv4 Ipv6</li>
-</ul>
-</li>
-<li>复杂类型 对象类型和嵌套类型</li>
-<li>特殊类型 地理信息</li>
-</ul>
-<h5 id="1-能否更改Mapping的字段类型"><a href="#1-能否更改Mapping的字段类型" class="headerlink" title="1.能否更改Mapping的字段类型"></a>1.能否更改Mapping的字段类型</h5><ul>
-<li>新增加的字段如果是Dynamic，Mapping更新；否则Mapping不变</li>
-<li>已经存在的字段不可改变，除非ReIndex</li>
-</ul>
-<h5 id="2-显示Mapping和常见的参数设置"><a href="#2-显示Mapping和常见的参数设置" class="headerlink" title="2.显示Mapping和常见的参数设置"></a>2.显示Mapping和常见的参数设置</h5><ul>
-<li>字段属性index设置为false 那么不可以进行索引查询</li>
-<li>index_options 倒排索引记录的内容 </li>
-<li>“null_value”:”NULL” </li>
-<li>copy_to : copy to 的属性不在mapping中 但是可以通过搜索查询得到</li>
-</ul>
-<h5 id="3-多字段特性和自定义Analyzer"><a href="#3-多字段特性和自定义Analyzer" class="headerlink" title="3.多字段特性和自定义Analyzer"></a>3.多字段特性和自定义Analyzer</h5><ul>
-<li>精确值和全文本：精确值是指具体的数字日期。全文本是一段text</li>
-</ul>
-<p><strong>自定义分词器</strong> </p>
-<ul>
-<li>Character Filter 对文本做处理，增加删除替换</li>
-<li>Tokenizer 将原始的文本进行分词</li>
-<li>Token Filter 将分词后的数据进一步进行处理</li>
-</ul>
-<h5 id="4-Index-Template-amp-Dynamic-Template"><a href="#4-Index-Template-amp-Dynamic-Template" class="headerlink" title="4.Index Template &amp; Dynamic Template"></a>4.Index Template &amp; Dynamic Template</h5>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/22/elastic-search/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
